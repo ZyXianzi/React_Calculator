@@ -1,37 +1,83 @@
 import * as React from "react";
 import Base from "./base";
+import { connect } from "react-redux";
+import { state } from "../../redux/reducer";
+import ACTIONS from "../../redux/actions";
+import { action } from "../../redux/reducer";
+import DigitButton from "../calculator/digitButton";
+import OperationButton from "../calculator/operationButton";
 
-interface CalculatorProps {}
+interface CalculatorProps {
+    lastOperand: string;
+    operation: string;
+    currentOperand: string;
+    delete_digit: () => action;
+    clear: () => action;
+    evaluate: () => action;
+}
 
-const Calculator: React.FunctionComponent<CalculatorProps> = () => {
+const Calculator: React.FunctionComponent<CalculatorProps> = (props) => {
     return (
         <Base>
             <div className="calculator">
                 <div className="output">
-                    <div className="last-output">123 *</div>
-                    <div className="current-output">96</div>
+                    <div className="last-output">
+                        {props.lastOperand}
+                        {props.operation}
+                    </div>
+                    <div className="current-output">{props.currentOperand}</div>
                 </div>
-                <button className="button-ac deep-color">AC</button>
-                <button className="deep-color">Del</button>
-                <button className="deep-color">/</button>
-                <button className="light-color">7</button>
-                <button className="light-color">8</button>
-                <button className="light-color">9</button>
-                <button className="deep-color">*</button>
-                <button className="light-color">4</button>
-                <button className="light-color">5</button>
-                <button className="light-color">6</button>
-                <button className="deep-color">-</button>
-                <button className="light-color">1</button>
-                <button className="light-color">2</button>
-                <button className="light-color">3</button>
-                <button className="deep-color">+</button>
-                <button className="light-color">0</button>
-                <button className="light-color">.</button>
-                <button className="button-equal">=</button>
+                <button className="button-ac deep-color" onClick={props.clear}>
+                    AC
+                </button>
+                <button className="deep-color" onClick={props.delete_digit}>
+                    Del
+                </button>
+                <OperationButton operation="÷" />
+                <DigitButton digit={"7"} />
+                <DigitButton digit={"8"} />
+                <DigitButton digit={"9"} />
+                <OperationButton operation="×" />
+                <DigitButton digit={"4"} />
+                <DigitButton digit={"5"} />
+                <DigitButton digit={"6"} />
+                <OperationButton operation="-" />
+                <DigitButton digit={"1"} />
+                <DigitButton digit={"2"} />
+                <DigitButton digit={"3"} />
+                <OperationButton operation="+" />
+                <DigitButton digit={"0"} />
+                <DigitButton digit={"."} />
+                <button className="button-equal" onClick={props.evaluate}>=</button>
             </div>
         </Base>
     );
 };
 
-export default Calculator;
+const mapStateToProps = (state: state) => {
+    return {
+        currentOperand: state.currentOperand,
+        lastOperand: state.lastOperand,
+        operation: state.operation,
+    };
+};
+
+const mapDispatchToProps = {
+    delete_digit: (): action => {
+        return {
+            type: ACTIONS.DELETE_DIGIT,
+        };
+    },
+    clear: (): action => {
+        return {
+            type: ACTIONS.CLEAR,
+        };
+    },
+    evaluate: (): action => {
+        return {
+            type: ACTIONS.EVALUATE,
+        };
+    },
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Calculator);
