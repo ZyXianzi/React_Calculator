@@ -1,13 +1,76 @@
 import * as React from "react";
-import {Link} from 'react-router-dom'
+import { Link } from "react-router-dom";
+import $ from "jquery";
 
-interface NavBarProps {}
+interface NavBarProps {
+    is_login: boolean;
+    username: string;
+}
 
-const NavBar: React.FunctionComponent<NavBarProps> = () => {
+const NavBar: React.FunctionComponent<NavBarProps> = (props) => {
+    let handleClick = () => {
+        $.ajax({
+            url: "https://app1186.acapp.acwing.com.cn/calculator/logout/",
+            type: "get",
+            success: (resp: any) => {
+                if (resp.result === "success") {
+                    window.location.href="/calculator/home";
+                }
+            }
+        });
+    }
+
+    let render_calculator = () => {
+        if (props.is_login) {
+            return (
+                <li className="nav-item">
+                    <Link className="nav-link" to="/calculator/calculator">
+                        计算器
+                    </Link>
+                </li>
+            );
+        } else {
+            return "";
+        }
+    };
+
+    let render_user = () => {
+        if (props.is_login) {
+            return (
+                <ul className="navbar-nav">
+                    <li className="nav-item">
+                        <a className="nav-link" style={{userSelect: "none"}}>{props.username}</a>
+                    </li>
+                    <li className="nav-item">
+                        <a onClick={handleClick} className="nav-link" style={{cursor: "pointer"}}>退出</a>
+                    </li>
+                </ul>
+            );
+        } else {
+            return (
+                <ul className="navbar-nav">
+                    <li className="nav-item">
+                        <Link
+                            className="nav-link"
+                            aria-current="page"
+                            to="/calculator/login"
+                        >
+                            登录
+                        </Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link className="nav-link" to="/calculator/register">
+                            注册
+                        </Link>
+                    </li>
+                </ul>
+            );
+        }
+    };
     return (
         <nav className="navbar navbar-expand-lg bg-light">
             <div className="container">
-                <Link className="navbar-brand" to="#">
+                <Link className="navbar-brand" to="/calculator">
                     Web
                 </Link>
                 <button
@@ -25,35 +88,16 @@ const NavBar: React.FunctionComponent<NavBarProps> = () => {
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
                             <Link
-                                className="nav-link active"
+                                className="nav-link"
                                 aria-current="page"
-                                to="/home"
+                                to="/calculator/home"
                             >
                                 首页
                             </Link>
                         </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/calculator">
-                                计算器
-                            </Link>
-                        </li>
+                        {render_calculator()}
                     </ul>
-                    <ul className="navbar-nav">
-                        <li className="nav-item">
-                            <Link
-                                className="nav-link active"
-                                aria-current="page"
-                                to="/login"
-                            >
-                                登录
-                            </Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/register">
-                                注册
-                            </Link>
-                        </li>
-                    </ul>
+                    {render_user()}
                 </div>
             </div>
         </nav>
